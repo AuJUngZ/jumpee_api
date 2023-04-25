@@ -1,5 +1,5 @@
 <?php
-
+//create user section
 function getBodyCreateUser(string $data): array
 {
     $body = json_decode($data, true);
@@ -22,11 +22,11 @@ function getBodyCreateUser(string $data): array
         'department' => $department
     ];
 }
-
 /**
  * @throws Exception
  */
-function addNewUser(object $db, array $body){
+function addNewUser(object $db, array $body): void
+{
     //check if email and employee_code already exists
     $sql = "SELECT * FROM employees WHERE email = :email OR employee_code = :employee_code";
     $stmt = $db->prepare($sql);
@@ -35,6 +35,8 @@ function addNewUser(object $db, array $body){
     if($result){
         throw new Exception('Email or employee code already exists');
     }else{
+        //hash password
+        $body['password'] = password_hash($body['password'], PASSWORD_DEFAULT);
         //insert new user
         $sql = "INSERT INTO employees (email, password, employee_code, first_name, last_name, nickname,hire_date, role, department) VALUES (:email, :password, :employee_code, :first_name, :last_name, :nickname,:hire_date, :role, :department)";
         $stmt = $db->prepare($sql);
@@ -51,3 +53,6 @@ function addNewUser(object $db, array $body){
         ]);
     }
 }
+
+
+//login section

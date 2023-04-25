@@ -3,6 +3,8 @@
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use App\Application\Database\DatabaseInterface;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 require __DIR__ . '/../vendor/autoload.php';
 
 //allow all origins
@@ -47,6 +49,23 @@ $app->get('/test-connect-db', function($request, $response, $args)use ($containe
         $response->getBody()->write('Failed to connect to database');
     }
     return $response->withHeader('Content-Type', 'text/plain');
+});
+
+$app->get('/test-jwt', function($request, $response, $args)use ($container){
+    $key = 'test';
+    $payload = array(
+        "role" => "admin",
+    );
+    $jwt = JWT::encode($payload, $key, 'HS256');
+    echo $jwt . "\n";
+    $decoded = JWT::decode($jwt, new Key($key,'HS256'));
+
+    if($decoded->role == 'admin') {
+        $response->getBody()->write('Admin');
+    } else {
+        $response->getBody()->write('Not admin');
+    }
+    return $response;
 });
 
 //add auth route

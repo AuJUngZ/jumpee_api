@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Application\Database\DatabaseInterface;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
+use App\Application\Middlewares\ValidateRequestBody\CreateUser;
 
 require_once __DIR__ . '/../../../src/BusinessLogic/auth-logic/auth-method.php';
 
@@ -35,13 +36,13 @@ function (App $app) {
             }catch (Exception $e){
                 $response->getBody()->write(json_encode(
                     [
-                        'status' => 'error',
+                        'status' => '400 Bad Request',
                         'message' => $e->getMessage()
                     ]
                 ));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
-        });
+        })->add(new CreateUser('111'));
 
         $group->post('/login', function ($request, $response, $args) use ($app) {
         });
