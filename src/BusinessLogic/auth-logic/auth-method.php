@@ -104,7 +104,6 @@ function verifyPassword(object $db, array $body, App $app): array
         if (password_verify($body['password'], $result['password'])) {
             $key = $app->getContainer()->get(SettingInterface::class)->getSettings('key_jwt');
             $result['token'] = generateToken($result, $key);
-            $_SESSION['token'] = $result['token'];
             return $result;
         } else {
             throw new Exception('Username or Password is incorrect');

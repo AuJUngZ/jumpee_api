@@ -72,6 +72,10 @@ $app->get('/test-jwt', function($request, $response, $args)use ($container){
 $auth = require __DIR__ . '/../routes/controllers/auth/auth.php';
 $auth($app);
 
+//add employees route
+$attendance = require __DIR__ . '/../routes/controllers/employees/attendance.php';
+$attendance($app);
+
 $app->run();
 
 
