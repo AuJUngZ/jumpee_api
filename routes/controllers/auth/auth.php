@@ -21,7 +21,6 @@ function (App $app) {
                         'status' => '200 OK',
                         'message' => 'User created successfully',
                         'employee' => [
-                            'id' => 1,
                             'emailOrUsername' => $body['emailOrUsername'],
                             'employee_code' => $body['employee_code'],
                             'first_name' => $body['first_name'],

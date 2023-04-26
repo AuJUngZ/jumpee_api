@@ -1,8 +1,9 @@
 <?php
 
+use App\Application\Settings\SettingInterface;
 use Firebase\JWT\JWT;
 use Slim\App;
-use App\Application\Settings\SettingInterface;
+
 //create user section
 function getBodyCreateUser(string $data): array
 {
@@ -61,9 +62,24 @@ function addNewUser(object $db, array $body): void
             'department' => $body['department'],
             'level' => $body['level']
         ]);
+
+        //get employee_id
+        $sql = "SELECT id FROM employees WHERE emailOrUsername = :emailOrUsername";
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['emailOrUsername' => $body['emailOrUsername']]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $employee_id = $result['id'];
+        //create row for image
+        createRowForImage($db, $employee_id);
     }
 }
 
+function createRowForImage(object $db, int $employee_id): void
+{
+    $sql = "INSERT INTO employees_images (employee_id, image_name) VALUES (:employee_id, :image_name)";
+    $stmt = $db->prepare($sql);
+    $stmt->execute(['employee_id' => $employee_id, 'image_name' => 'default.png']);
+}
 
 
 //login section
@@ -87,7 +103,7 @@ function verifyPassword(object $db, array $body, App $app): array
     if ($result) {
         if (password_verify($body['password'], $result['password'])) {
             $key = $app->getContainer()->get(SettingInterface::class)->getSettings('key_jwt');
-            $result['token'] = generateToken($body,$key);
+            $result['token'] = generateToken($result, $key);
             $_SESSION['token'] = $result['token'];
             return $result;
         } else {
@@ -105,6 +121,7 @@ function generateToken(array $body, string $key): string
     $payload = [
         'role' => $body['role'],
         'emailOrUsername' => $body['emailOrUsername'],
+        'employee_id' => $body['id'],
     ];
     $token = JWT::encode($payload, $key, 'HS256');
     return $token;
@@ -146,7 +163,8 @@ function updatePassword(object $db, array $body): void
 }
 
 //Utils
-function selectUser(string $emailOUsername , object $db){
+function selectUser(string $emailOUsername, object $db)
+{
     $sql = "SELECT * FROM employees WHERE emailOrUsername = :emailOrUsername";
     $stmt = $db->prepare($sql);
     $stmt->execute(['emailOrUsername' => $emailOUsername]);
