@@ -13,8 +13,8 @@ class CreateUser
         $body = $request->getBody()->getContents();
         $body = json_decode($body, true);
         $errors = [];
-        if(empty($body['email']))
-            $errors['email'] = 'Email is required';
+        if(empty($body['emailOrUsername']))
+            $errors['emailOrUsername'] = 'Email or Username is required';
         if(empty($body['password']))
             $errors['password'] = 'Password is required';
         if(empty($body['employee_code']))
@@ -25,10 +25,14 @@ class CreateUser
             $errors['last_name'] = 'Last name is required';
         if(empty($body['nickname']))
             $errors['nickname'] = 'Nickname is required';
+        if(empty($body['hire_date']))
+            $errors['hire_date'] = 'Hire date is required';
         if(empty($body['role']))
             $errors['role'] = 'Role is required';
         if(empty($body['department']))
             $errors['department'] = 'Department is required';
+        if(empty($body['level']))
+            $errors['level'] = 'Level is required';
 
         if(!empty($errors)){
             $response = new Response();

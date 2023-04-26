@@ -12,6 +12,7 @@ return function(ContainerBuilder $containerBuilder){
                 'displayErrorDetails' => true,
                 'logErrors' => true,
                 'logErrorDetails' => true,
+                'key_jwt' => 'banana_software'
             ]);
         }
     ]);
