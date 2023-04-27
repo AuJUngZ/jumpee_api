@@ -4,43 +4,51 @@ namespace App\Application\Middlewares\ValidateToken;
 
 use App\Application\Settings\SettingInterface;
 use Exception;
-use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
-use Slim\Psr7\Response;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseInterface;
 use Firebase\JWT\Key;
+use Slim\Psr7\Response;
 
-class VerifyToken{
+class VerifyToken
+{
 
     private $app;
 
-    public function __construct($app){
+    public function __construct($app)
+    {
         $this->app = $app;
     }
 
     /**
      * @throws Exception
      */
-    public function __invoke($request, $handler){
-        try{
+    public function __invoke($request, $handler)
+    {
+        try {
             $token = $this->getToken($request);
             $this->verifyToken($token);
             return $handler->handle($request);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $response = new Response();
             $response->getBody()->write(json_encode([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]));
-            return $response->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
         }
     }
-    private function getToken($request){
-        $body = $request->getBody()->getContents();
-        $body = json_decode($body, true);
-        return $body['token'];
+
+    /**
+     * @throws Exception
+     */
+    private function getToken($request)
+    {
+        $token = $request->getHeader('Authorization');
+        if (empty($token)) {
+            throw new Exception('Token not found');
+        }
+        //remove 'Bearer ' from token
+        $token = explode(' ', $token[0]);
+        return $token[1];
     }
 
     /**
@@ -49,8 +57,12 @@ class VerifyToken{
     private function verifyToken(mixed $token)
     {
         $key = $this->app->getContainer()->get(SettingInterface::class)->getSettings('key_jwt');
-        $decode = JWT::decode($token, new Key($key,'HS256'));
-        if($decode->role != 'admin' && $decode->role != 'employee') {
+        try {
+            $decode = JWT::decode($token, new Key($key, 'HS256'));
+            if ($decode->role != 'admin' && $decode->role != 'employee') {
+                throw new Exception('You are not allowed to access this route');
+            }
+        } catch (Exception $e) {
             throw new Exception('Invalid token');
         }
     }

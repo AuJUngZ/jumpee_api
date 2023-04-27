@@ -47,7 +47,7 @@ function addNewUser(object $db, array $body): void
     } else {
         //hash password
         $body['password'] = password_hash($body['password'], PASSWORD_DEFAULT);
-        //insert new user
+        //insert new user and create row in employees_images table
         $sql = "INSERT INTO employees (emailOrUsername, password, employee_code, first_name, last_name, nickname,hire_date, role, department, level) VALUES (:emailOrUsername, :password, :employee_code, :first_name, :last_name, :nickname,:hire_date, :role, :department, :level)";
         $stmt = $db->prepare($sql);
         $stmt->execute([
@@ -63,14 +63,6 @@ function addNewUser(object $db, array $body): void
             'level' => $body['level']
         ]);
 
-        //get employee_id
-        $sql = "SELECT id FROM employees WHERE emailOrUsername = :emailOrUsername";
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['emailOrUsername' => $body['emailOrUsername']]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $employee_id = $result['id'];
-        //create row for image
-        createRowForImage($db, $employee_id);
     }
 }
 
