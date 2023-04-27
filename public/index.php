@@ -76,6 +76,14 @@ $auth($app);
 $attendance = require __DIR__ . '/../routes/controllers/employees/attendance.php';
 $attendance($app);
 
+//add leaves route
+$leaves = require __DIR__ . '/../routes/controllers/employees/leaves/leaves.php';
+$leaves($app);
+
+//add leaves stat route
+$leavesStat = require __DIR__ . '/../routes/controllers/employees/leaves/stat.php';
+$leavesStat($app);
+
 $app->run();
 
 
