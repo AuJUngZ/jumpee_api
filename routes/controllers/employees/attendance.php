@@ -1,9 +1,10 @@
 <?php
+
 use App\Application\Database\DatabaseInterface;
-use Slim\Routing\RouteCollectorProxy;
-use Slim\App;
-use App\Application\Middlewares\ValidateToken\VerifyToken;
 use App\Application\Middlewares\ValidateRequestBody\Attendance;
+use App\Application\Middlewares\ValidateToken\VerifyToken;
+use Slim\App;
+use Slim\Routing\RouteCollectorProxy;
 
 require_once __DIR__ . '/../../../src/BusinessLogic/employees/attendance-method.php';
 
@@ -18,14 +19,27 @@ function (App $app) {
 
             //get total employee
             $total_employee = count(getAllEmployee($db));
-            $response->getBody()->write(json_encode([
-                'status' => '200 OK',
-                'employee_attendance' => $data_attendance,
-                'summary' =>[
-                    'total_employee' => $total_employee,
-                    'present' => count($data_attendance),
-                ]
-            ]));
+
+            //find day difference
+            $start = new DateTime($body['startDate']);
+            $end = new DateTime($body['endDate']);
+            $day_difference = $start->diff($end)->days;
+
+            if ($day_difference > 1) {
+                $response->getBody()->write(json_encode([
+                    'status' => '200 OK',
+                    'employee_attendance' => $data_attendance,
+                ]));
+            } else {
+                $response->getBody()->write(json_encode([
+                    'status' => '200 OK',
+                    'employee_attendance' => $data_attendance,
+                    'summary' => [
+                        'total_employee' => $total_employee,
+                        'present' => count($data_attendance),
+                    ]
+                ]));
+            }
             return $response->withHeader('Content-Type', 'application/json');
         });
     })->add(new VerifyToken($app))->add(new Attendance());

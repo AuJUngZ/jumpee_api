@@ -8,9 +8,8 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Slim\Psr7\Response;
 
-class VerifyToken
+class VerifyAdminToken
 {
-
     private $app;
 
     public function __construct($app)
@@ -59,7 +58,7 @@ class VerifyToken
         $key = $this->app->getContainer()->get(SettingInterface::class)->getSettings('key_jwt');
         try {
             $decode = JWT::decode($token, new Key($key, 'HS256'));
-            if ($decode->role != 'admin' && $decode->role != 'employee') {
+            if ($decode->role != 'admin') {
                 throw new Exception('You are not allowed to access this route');
             }
         } catch (Exception $e) {

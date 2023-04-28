@@ -92,6 +92,18 @@ $leavesHistory($app);
 $leavesRequest = require __DIR__ . '/../routes/controllers/employees/leaves/request.php';
 $leavesRequest($app);
 
+//add leaves certifier route
+$leavesCertifier = require __DIR__ . '/../routes/controllers/employees/leaves/certifier/certifier.php';
+$leavesCertifier($app);
+
+//add leaves certifier add route
+$leavesCertifierAdd = require __DIR__ . '/../routes/controllers/employees/leaves/certifier/add.php';
+$leavesCertifierAdd($app);
+
+//add leaves certifier approve route
+$leavesCertifierApprove = require __DIR__ . '/../routes/controllers/employees/leaves/certifier/approve.php';
+$leavesCertifierApprove($app);
+
 $app->run();
 
 
