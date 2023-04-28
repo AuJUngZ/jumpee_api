@@ -13,8 +13,9 @@ return (
 function (App $app) {
     $app->group('/employees/leaves', function (RouteCollectorProxy $group) use ($app) {
         $group->get('/stat', function ($request, $response, $args)use ($app) {
+            $params = getQueryParam($request);
             $body = getLeavesBody($request->getBody()->getContents());
-            $data = getStatOfLeaveApproved($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $body);
+            $data = getStatOfLeaveApproved($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $body, $params);
             $response->getBody()->write(json_encode([
                 'status' => 'success',
                 'leaves_stat' => $data
