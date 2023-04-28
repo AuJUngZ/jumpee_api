@@ -10,7 +10,8 @@ function getAttendanceBody(string $body): array{
     ];
 }
 
-function getData(object $db,string $startDate, string $endDate){
+function getData(object $db,string $startDate, string $endDate): array
+{
     $sql = "SELECT
             employee_id,
             employees.first_name,
@@ -26,11 +27,22 @@ function getData(object $db,string $startDate, string $endDate){
         JOIN employees ON attendance_raw.employee_id = employees.id
         WHERE DATE(in_out_time) BETWEEN '$startDate' AND '$endDate'
         GROUP BY employee_id, work_date";
+    return duplicated_part($db, $sql);
+}
+
+/**
+ * @param object $db
+ * @param string $sql
+ * @return array
+ */
+function duplicated_part(object $db, string $sql): array
+{
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $first_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $new_data = [];
+    //To add temperature data
     foreach ($first_data as $key) {
         $sql = "
             SELECT temperature FROM attendance_raw
@@ -65,4 +77,26 @@ function getAllEmployee($db){
     $stmt = $db->prepare($sql);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getIndividualData(object $db,array $body,string $employeeId): array
+{
+    $startDate = $body['startDate'];
+    $endDate = $body['endDate'];
+    $sql = "SELECT
+            employee_id,
+            employees.first_name,
+            employees.last_name,
+            employees.hire_date,
+            employees.department,
+            employees.level,
+            employees.hire_date,
+            DATE(in_out_time) AS work_date,
+            MIN(TIME(in_out_time)) AS first_in,
+            MAX(TIME(in_out_time)) AS last_out
+        FROM attendance_raw
+        JOIN employees ON attendance_raw.employee_id = employees.id
+        WHERE DATE(in_out_time) BETWEEN '$startDate' AND '$endDate' AND employee_id = '$employeeId'
+        GROUP BY employee_id, work_date";
+    return duplicated_part($db, $sql);
 }
