@@ -16,8 +16,7 @@ function (App $app) {
             $response->getBody()->write(json_encode([
                 'status' => '200 OK',
                 'data' => [
-                    'leave_information' => $data[0],
-                    'approved' => $data[1],
+                    'leave_information' => $data,
                 ],
             ]));
             return $response->withHeader('Content-Type', 'application/json');

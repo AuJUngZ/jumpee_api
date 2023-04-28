@@ -84,6 +84,14 @@ $leaves($app);
 $leavesStat = require __DIR__ . '/../routes/controllers/employees/leaves/stat.php';
 $leavesStat($app);
 
+//add leaves history route
+$leavesHistory = require __DIR__ . '/../routes/controllers/employees/leaves/history.php';
+$leavesHistory($app);
+
+//add leaves request route
+$leavesRequest = require __DIR__ . '/../routes/controllers/employees/leaves/request.php';
+$leavesRequest($app);
+
 $app->run();
 
 

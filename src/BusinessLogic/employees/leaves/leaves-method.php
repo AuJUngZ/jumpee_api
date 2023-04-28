@@ -21,13 +21,5 @@ function getLeavesDataNotApproved(object $db, $body): array
 ";
     $stmt = $db->prepare($sql);
     $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($data as $key){
-        $sql = "SELECT * FROM approved WHERE approved.leave_id = :id";
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['id' => $key['id']]);
-        $approved = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    return array_merge($data, [$approved]);
+    return extracted($stmt, $db);
 }
