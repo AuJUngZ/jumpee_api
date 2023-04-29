@@ -104,6 +104,10 @@ $leavesCertifierAdd($app);
 $leavesCertifierApprove = require __DIR__ . '/../routes/controllers/employees/leaves/certifier/approve.php';
 $leavesCertifierApprove($app);
 
+//add utils route
+$utils = require __DIR__ . '/../routes/controllers/utils/aboutConfig.php';
+$utils($app);
+
 $app->run();
 
 

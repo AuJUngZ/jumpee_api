@@ -7,7 +7,7 @@ function updateApproveStatus(object $db, string $leaveId, string $certifierId): 
 {
     try{
         if(!checkDoesLeaveExist($db, $leaveId, $certifierId)){
-            throw new Exception('Leave does not exist');
+            throw new Exception('Leave and certifier id does not match');
         }
 
         $sql = "UPDATE approved
