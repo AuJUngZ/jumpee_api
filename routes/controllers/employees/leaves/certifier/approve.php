@@ -13,10 +13,11 @@ function (App $app) {
             try{
                 $body = json_decode($request->getBody()->getContents(), true);
                 $status = updateApproveStatus($this->get(DatabaseInterface::class)->getConnection(), $body['leaveId'], $body['certifierId']);
+                updateApproveCountAndStatus($this->get(DatabaseInterface::class)->getConnection(), $body['leaveId'], $status[0]['status']);
                 $response->getBody()->write(json_encode([
                     'status' => '200 OK',
                     'message' => 'Leave status updated',
-                    'current_status' => $status[0]['status']
+                    'current_status' => $status[0]
                 ]));
             }catch(Exception $e){
                 $response->getBody()->write(json_encode([

@@ -82,6 +82,11 @@ class LeaveRequest
                 'leave By Special Day' => 'Leave by special day is required'
             ];
         }
+        if(empty($body['leaveDays'])){
+            $errors[] = [
+                'Leave Days' => 'Leave days is required'
+            ];
+        }
         return $errors;
     }
 }

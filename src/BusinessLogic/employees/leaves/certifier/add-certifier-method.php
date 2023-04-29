@@ -19,7 +19,7 @@ function addCertifier($db, array $certifiers): void
 
     foreach ($certifiers as $certifier) {
         try {
-            if ($certifier['type'] != 'create' || $certifier['type'] != 'sick_leave' || $certifier['type'] != 'business_leave') {
+            if ($certifier['type'] != 'create' && $certifier['type'] != 'sick_leave' && $certifier['type'] != 'business_leave') {
                 throw new Exception('Type of leave is not valid');
             }
             $sql = "INSERT INTO create_approve_leave (employee_id, type_of_leave) VALUES (:employee_id, :type_of_leave)";

@@ -38,9 +38,9 @@ function addDataToArray($employee_data, $employee, $businessLeaveStat, $sickLeav
 {
     $employee_data['employee_id'] = $employee['id'];
     $employee_data['employee_name'] = $employee['first_name'] . ' ' . $employee['last_name'];
-    $employee_data['business_leave'] = $businessLeaveStat[0]['counter'] == null ? 0 : $businessLeaveStat[0]['counter'];
-    $employee_data['sick_leave'] = $sickLeaveStat[0]['counter'] == null ? 0 : $sickLeaveStat[0]['counter'];
-    $employee_data['special_leave'] = $specialLeaveStat[0]['counter'] == null ? 0 : $specialLeaveStat[0]['counter'];
+    $employee_data['business_leave'] = $businessLeaveStat[0]['counter'] == null ? 0 :  (int)$businessLeaveStat[0]['counter'];
+    $employee_data['sick_leave'] = $sickLeaveStat[0]['counter'] == null ? 0 : (int)$sickLeaveStat[0]['counter'];
+    $employee_data['special_leave'] = $specialLeaveStat[0]['counter'] == null ? 0 : (int)$specialLeaveStat[0]['counter'];
     return $employee_data;
 }
 
@@ -80,25 +80,25 @@ function sqlQuery(string $type_of_leave, array $body, object $db, int $id): arra
     $start_date = $body['startDate'];
     $end_date = $body['endDate'];
     if ($type_of_leave != 'special_leave') {
-        $sql = "SELECT COUNT(*) as counter, employee_id, CONCAT(first_name, ' ' , last_name) as employee_name FROM leaves_requirement 
+        $sql = "SELECT SUM(leave_days) as counter, employee_id, CONCAT(first_name, ' ' , last_name) as employee_name FROM leaves_requirement 
                 JOIN employees ON employees.id = leaves_requirement.employee_id
                 WHERE leave_type = '$type_of_leave' 
                   AND employee_id = '$id'
                   AND DATE(leave_start_date) >= '$start_date' 
                   AND DATE(leave_end_date) <= '$end_date' 
-                  AND leave_status = 'Pending'
+                  AND leave_status = 'Approved'
                   AND leave_by_special_day = 0
         GROUP BY employee_id
         ";
     } else {
         $sql = "
-            SELECT COUNT(*) as counter, employee_id, CONCAT(first_name, ' ' , last_name) as employee_name FROM leaves_requirement 
+            SELECT SUM(leave_days) as counter, employee_id, CONCAT(first_name, ' ' , last_name) as employee_name FROM leaves_requirement 
                 JOIN employees ON employees.id = leaves_requirement.employee_id
-                WHERE leave_type = 'sick_leave'
+                WHERE leave_type = 'business_leave'
                   AND employee_id = '$id'
                   AND DATE(leave_start_date) >= '$start_date' 
                   AND DATE(leave_end_date) <= '$end_date' 
-                  AND leave_status = 'Pending'
+                  AND leave_status = 'Approved'
                   AND leave_by_special_day = 1;
         GROUP BY employee_id
         ";

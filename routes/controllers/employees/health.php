@@ -11,8 +11,9 @@ return (
 function (App $app) {
     $app->group('/employee', function (RouteCollectorProxy $group) use ($app) {
         $group->get('/health', function ($request, $response, $args) use ($app) {
+            $body = json_decode($request->getBody()->getContents(), true);
             $params = $request->getQueryParams();
-            $data = getHealth($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $params['employeeId']);
+            $data = getHealth($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $params['employeeId'],$body);
             $response->getBody()->write(json_encode([
                 'status' => '200 OK',
                 'data' => $data

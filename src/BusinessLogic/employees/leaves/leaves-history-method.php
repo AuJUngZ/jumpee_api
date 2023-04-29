@@ -24,9 +24,9 @@ function extracted($stmt, object $db): array
 
     $newData = [];
     foreach ($data as $key) {
-        $sql = "SELECT * FROM approved WHERE approved.leave_id = :id";
+        $sql = "SELECT * FROM approved WHERE approved.leave_id = :leave_id";
         $stmt = $db->prepare($sql);
-        $stmt->execute(['id' => $key['id']]);
+        $stmt->execute(['leave_id' => $key['leave_id']]);
         $approved = $stmt->fetchAll(PDO::FETCH_ASSOC);
         //add approved data to $key
         $key['approved'] = $approved;

@@ -13,7 +13,7 @@ function (App $app) {
     $app->group('/employee', function (RouteCollectorProxy $group) use ($app) {
         $group->post('/leaves/request', function ($request, $response, $args) use ($app) {
             try {
-                $body = getBodyOfRequestLeave($request->getBody());
+                $body = getBodyOfRequestLeave($request->getBody()->getContents());
                 postDataToDB($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $body);
                 $response->getBody()->write(json_encode([
                     'status' => '200 OK',

@@ -1,8 +1,13 @@
 <?php
 
-function getHealth(object $db , mixed $employeeId): array
+function getHealth(object $db , mixed $employeeId, array $body): array
 {
-    $sql = "SELECT * FROM employee_health WHERE employee_id = :employeeId";
+    $startDate = $body['startDate'];
+    $endDate = $body['endDate'];
+
+    $sql = "SELECT * FROM employee_health WHERE employee_id = :employeeId
+            AND created_at BETWEEN '$startDate' AND DATE_ADD('$endDate', INTERVAL 1 DAY)
+";
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':employeeId', $employeeId);
     $stmt->execute();

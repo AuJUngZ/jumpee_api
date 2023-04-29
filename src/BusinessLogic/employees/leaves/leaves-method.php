@@ -2,13 +2,7 @@
 
 function getLeavesBody(string $body):array
 {
-    $body = json_decode($body, true);
-    $startDate = $body['startDate'];
-    $endDate = $body['endDate'];
-    return [
-        'startDate' => $startDate,
-        'endDate' => $endDate,
-    ];
+   return json_decode($body, true);
 }
 
 function getLeavesDataNotApproved(object $db, $body): array
