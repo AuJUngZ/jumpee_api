@@ -108,6 +108,10 @@ $leavesCertifierApprove($app);
 $utils = require __DIR__ . '/../routes/controllers/utils/aboutConfig.php';
 $utils($app);
 
+//add get health route
+$health = require __DIR__ . '/../routes/controllers/employees/health.php';
+$health($app);
+
 $app->run();
 
 

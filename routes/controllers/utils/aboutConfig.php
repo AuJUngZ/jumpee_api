@@ -2,6 +2,7 @@
 
 use App\Application\Database\DatabaseInterface;
 use App\Application\Middlewares\ValidateToken\VerifyToken;
+use App\Application\Middlewares\ValidateToken\VerifyAdminToken;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 use App\Application\Middlewares\ValidateRequestBody\UpdateLeaveConfig;
@@ -30,7 +31,7 @@ function (App $app) {
                 'message' => 'Update leave config successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        })->add(new UpdateLeaveConfig());
+        })->add(new VerifyAdminToken($app))->add(new UpdateLeaveConfig());
 
         $group->post('/update-config/attendance', function ($request, $response, $args) {
             $body = json_decode($request->getBody()->getContents(), true);
@@ -40,7 +41,7 @@ function (App $app) {
                 'message' => 'Update attendance config successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        })->add(new UpdateAttendanceConfig());
+        })->add(new VerifyAdminToken($app))->add(new UpdateAttendanceConfig());
 
         $group->post('/update-time-interval', function ($request, $response, $args) {
             $body = json_decode($request->getBody()->getContents(), true);
@@ -50,6 +51,6 @@ function (App $app) {
                 'message' => 'Update time interval successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        })->add(new UpdateTimeIntervals());
+        })->add(new VerifyAdminToken($app))->add(new UpdateTimeIntervals());
     })->add(new VerifyToken($app));
 });
