@@ -112,6 +112,10 @@ $utils($app);
 $health = require __DIR__ . '/../routes/controllers/employees/health.php';
 $health($app);
 
+//add holidays create route
+$holidaysCreate = require __DIR__ . '/../routes/controllers/holidays/create.php';
+$holidaysCreate($app);
+
 $app->run();
 
 
