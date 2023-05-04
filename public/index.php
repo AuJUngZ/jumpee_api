@@ -38,7 +38,7 @@ $middlewares = require __DIR__ . '/../app/middleware.php';
 $middlewares($app);
 
 $app->get('/', function($request, $response, $args){
-    $response->getBody()->write('Hello World');
+    $response->getBody()->write('Hello AuJung your project has been deployed successfully');
     return $response;
 });
 

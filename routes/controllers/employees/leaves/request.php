@@ -16,7 +16,8 @@ function (App $app) {
                 $body = getBodyOfRequestLeave($request->getBody()->getContents());
                 //To check if the leave days are matching or not
                 checkLeaveDays($body);
-                postDataToDB($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $body);
+                //TODO : To uncomment this line after ready
+//                postDataToDB($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $body);
                 $response->getBody()->write(json_encode([
                     'status' => '200 OK',
                     'message' => 'Leave request submitted successfully'
