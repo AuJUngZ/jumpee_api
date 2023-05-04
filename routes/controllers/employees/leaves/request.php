@@ -14,6 +14,8 @@ function (App $app) {
         $group->post('/leaves/request', function ($request, $response, $args) use ($app) {
             try {
                 $body = getBodyOfRequestLeave($request->getBody()->getContents());
+                //To check if the leave days are matching or not
+                checkLeaveDays($body);
                 postDataToDB($app->getContainer()->get(DatabaseInterface::class)->getConnection(), $body);
                 $response->getBody()->write(json_encode([
                     'status' => '200 OK',

@@ -2,11 +2,13 @@
 
 use App\Application\Database\DatabaseInterface;
 use App\Application\Middlewares\ValidateRequestBody\Attendance;
+use App\Application\Middlewares\ValidateRequestBody\AttendanceAdd;
 use App\Application\Middlewares\ValidateToken\VerifyToken;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
 require_once __DIR__ . '/../../../src/BusinessLogic/employees/attendance-method.php';
+require_once __DIR__ . '/../../../src/BusinessLogic/employees/attendance-add-method.php';
 
 return (
 function (App $app) {
@@ -14,7 +16,6 @@ function (App $app) {
         $group->get('/attendance', function ($request, $response, $args) {
             $params = $request->getQueryParams();
             $body = getAttendanceBody($request->getBody()->getContents());
-            //get attendance data
             $db = $this->get(DatabaseInterface::class)->getConnection();
             //get total employee
             $total_employee = count(getAllEmployee($db));
@@ -45,6 +46,15 @@ function (App $app) {
                 ]));
             }
             return $response->withHeader('Content-Type', 'application/json');
-        });
-    })->add(new VerifyToken($app))->add(new Attendance());
+        })->add(new Attendance($app));
+        $group->post('/attendance/add', function($request, $response, $args){
+            $body = json_decode($request->getBody()->getContents(), true);
+            postAttendance($this->get(DatabaseInterface::class)->getConnection(), $body);
+            $response->getBody()->write(json_encode([
+                'status' => '200 OK',
+                'message' => 'Attendance added successfully'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        })->add(new AttendanceAdd($app));
+    })->add(new VerifyToken($app));
 });

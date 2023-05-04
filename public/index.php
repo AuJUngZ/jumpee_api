@@ -32,6 +32,7 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->setBasePath('/jumpee_api');
 
+
 //add default middlewares
 $middlewares = require __DIR__ . '/../app/middleware.php';
 $middlewares($app);
