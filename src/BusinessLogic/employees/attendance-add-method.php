@@ -24,10 +24,14 @@ function postAttendance($db, $body): void
 
 
     //if not, insert new data of this day for this employee
-    if(!$result){
-        $time_config = getWorkTimeConfig($db);
+    if (!$result) {
+        if(getProfileTemplate($db, $body['employee_id'], $body['in_out_time']) != null){
+            $time_config = getProfileTemplate($db, $body['employee_id'], $body['in_out_time']);
+        }else{
+            $time_config = getWorkTimeConfig($db);
+        }
         $work_start_time = $time_config['work_start_time'];
-        $work_late_time = $time_config['work_end_time'];
+        $work_late_time = $time_config['work_late_time'];
         $sql = "INSERT INTO attendance (employee_id, in_time, out_time, in_temperature, out_temperature, status)
     VALUES (:employee_id, :in_time, :out_time, :in_temperature, :out_temperature,
             CASE
@@ -43,9 +47,9 @@ function postAttendance($db, $body): void
             ':in_temperature' => $body['temperature'],
             ':out_temperature' => null,
         ]);
-    }else{
-       //update out_time and out_temperature
-         $sql = "UPDATE attendance SET out_time = :out_time, out_temperature = :out_temperature WHERE employee_id = :employee_id AND date(in_time) = :date";
+    } else {
+        //update out_time and out_temperature
+        $sql = "UPDATE attendance SET out_time = :out_time, out_temperature = :out_temperature WHERE employee_id = :employee_id AND date(in_time) = :date";
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':employee_id' => $body['employee_id'],
@@ -54,6 +58,20 @@ function postAttendance($db, $body): void
             ':date' => date('Y-m-d', strtotime($body['in_out_time'])),
         ]);
     }
+}
+
+function getProfileTemplate(object $db, int $employee_id, string $date)
+{
+    $sql = "SELECT template_id, work_start_time,work_late_time FROM employees_profile_template
+    JOIN profile_template pt on employees_profile_template.template_id = pt.id               
+    WHERE employee_id = :employee_id 
+    AND start_date <= :date AND end_date >= :date";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':employee_id' => $employee_id,
+        ':date' => date('Y-m-d', strtotime($date)),
+    ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function getWorkTimeConfig(object $db){
